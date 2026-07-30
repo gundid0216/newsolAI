@@ -1,0 +1,32 @@
+services:
+  api:
+    build: .
+    container_name: newsolai-api
+    ports:
+      - "${API_PORT:-8000}:8000"
+    env_file:
+      - .env
+    depends_on:
+      - db
+    volumes:
+      - ./app:/app/app
+      - ./data:/app/data
+      - ./model:/app/model
+      - ./logs:/app/logs
+    restart: unless-stopped
+
+  db:
+    image: postgres:16-alpine
+    container_name: newsolai-db
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-newsolai}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-newsolai}
+      POSTGRES_DB: ${POSTGRES_DB:-newsolai}
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
